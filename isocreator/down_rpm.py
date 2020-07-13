@@ -72,7 +72,7 @@ def get_down_pkg(yum_pkg_avail, rpm_list_uniq, specific_arch):
             if find_pkg(yum_pkg_avail, rname):
                 all_archs = ["i686", "x86_64", "noarch", "aarch64"]
                 if rarch not in all_archs:
-                    rname_arch = rname + specific_arch
+                    rname_arch = rname + "." + specific_arch
                     if find_pkg(yum_pkg_avail, rname_arch):
                         rname = rname_arch
                     else:
