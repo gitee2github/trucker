@@ -30,7 +30,7 @@ def create_install_img(common_vars):
     repos = " " + common_vars.REPOS1
     repos_s = repos.replace(" ", " -s ")
     cmd = "lorax " + "--isfinal " +  "-p " + common_vars.NAME + " -v " + common_vars.VERSION + " -r " + common_vars.RELEASE \
-            + " --sharedir " + "80-openeuler " + "--rootfs-size " + "3 " + "--buildarch " + para.ARCH + \
+            + " --sharedir " + "80-openeuler " + "--rootfs-size " + "3 " + "--buildarch " + common_vars.ARCH + \
             repos_s +  " --nomacboot " + "--noupgrade " + common_vars.BUILD + "/iso"
     lorax_logfile = "lorax.logfile"
     with open(lorax_logfile, "w") as lorax_log:
@@ -41,9 +41,9 @@ def create_repos(common_vars):
     # if /etc/repos.old is already exist, back up to a new dir depends on time
     if os.path.isdir("/etc/repos.old"):
         TIMEFORMAT = '%Y-%m-%d-%H:%M:%S'
-        thetime = datetime.datetime.now().strftime(TIMEFORMAT)
-        new_old_repo = "repos.old-" + thetime
-        os.rename("/etc/repos.old/", new_old_repo)
+        thetime = "repos.old-" + datetime.datetime.now().strftime(TIMEFORMAT)
+        bak_repo_new = os.path.join("/etc/", thetime)
+        os.rename("/etc/repos.old/", bak_repo_new)
 
     os.rename("/etc/yum.repos.d", "/etc/repos.old")
     os.mkdir("/etc/yum.repos.d/")
@@ -75,9 +75,10 @@ if __name__ == "__main__":
     print("-----create lorax install image start-----")
     create_img = create_install_img(variables)
 
-    print("-----create repos-----")
-    create_repos(variables)
-    print("-----create repos-----")
+    if variables.REPOS1:
+        print("-----create repos-----")
+        create_repos(variables)
+        print("-----create repos-----")
 
     print("-----download packages-----")
     download_rpms(variables)
@@ -96,11 +97,13 @@ if __name__ == "__main__":
 
     variables.cfg_init()
 
-    get_rpm_pub_key(variables.BUILD)
+    #get_rpm_pub_key(variables.BUILD)
 
-    if variables.DBG_FALG == 1:
-        # to be done
+    if variables.DBG_FLAG == 1:
+        print("-----start creating debugiso-----")
+        CreateIso().gen_dbg_iso(variables)
+        print("-----finish creating debugiso-----")
     else:
-        CreateIso().gen_iso(variables)
+        CreateIso().gen_install_iso(variables)
 
     mk_clean(variables.BUILD)

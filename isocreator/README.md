@@ -19,6 +19,7 @@ Tools for creating iso
 1.  将本仓库clone到本地
 2.  调用mkopeneuler.py脚本，需要加上各种参数，具体可以--help查看
 3.  80-openeuler以及config相关配置文件还未修改完成，待开源
+4.  如下命令python3 mkopeneuler.py -f config/standard/standard.conf -n openEuler -v 20.07 -s LTS -a x86_64 -r 'https://repo.openeuler.org/openEuler-20.03-LTS/everything/x86_64/ https://repo.openeuler.org/openEuler-20.03-LTS/debuginfo/x86_64/ https://repo.openeuler.org/openEuler-20.03-LTS/source/' 生产标准iso，加上-d参数生成debug-iso
 
 #### 参与贡献
 

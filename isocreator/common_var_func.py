@@ -6,6 +6,7 @@ import sys
 import subprocess
 import configparser
 import shutil
+import glob
 
 class CommonVars(object):
     CONFIG_FILE = NAME = VERSION = RELEASE = REPOS1 = ARCH = ""
@@ -32,8 +33,8 @@ class CommonVars(object):
 
         self.RELEASE_NAME = self.NAME + "-" + self.VERSION + "-" + self.ARCH
         self.ISO_NAME = self.NAME + "-" + self.VERSION + "-" + self.ARCH + "-dvd.iso"
-        self.SRC_ISO_NAME = self.NAME + "-" + self.VERSION + "-" + "-source-dvd.iso"
-        self.DBG_ISO_NAME = self.NAME + "-" + self.VERSION + "-" + "-debug-dvd.iso"
+        self.SRC_ISO_NAME = self.NAME + "-" + self.VERSION + "-source-dvd.iso"
+        self.DBG_ISO_NAME = self.NAME + "-" + self.VERSION + "-debug-dvd.iso"
 
         if self.CONFIG_FILE and os.path.isfile(self.CONFIG_FILE):
             with open(self.CONFIG_FILE) as config_file:
@@ -108,6 +109,33 @@ class CommonFunc(object):
                 if str_to_find in line:
                     return True
         return False
+
+    # delete file or directory
+    def delete_file_dir(self, file_dir):
+        if os.path.isfile(file_dir):
+            os.remove(file_dir)
+        elif os.path.isdir(file_dir):
+            shutil.rmtree(file_dir)
+        else:
+            print("There are no such file or directory!")
+
+    # delete all files under one directory
+    def delete_files_in_dir(self, directory, wildcard):
+        # make directory ends with '/'
+        if directory.endswith("/"):
+            pass
+        else:
+            directory = directory + "/"
+        if os.path.isdir(directory):
+            for file_dir in glob.glob(os.path.join(directory, wildcard)):
+                if os.path.isfile(file_dir):
+                    os.remove(file_dir)
+                else:
+                    shutil.rmtree(file_dir)
+        else:
+            print("No such directory of files!")
+
+
 
 if __name__ == "__main__":
     pass
