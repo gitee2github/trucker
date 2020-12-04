@@ -57,16 +57,20 @@ def create_repos(common_vars):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--config_file", type=str, help="Config file")
-    parser.add_argument("-n", "--name", type=str, help="Name for iso")
+    #parser.add_argument("-f", "--config_file", type=str, help="Config file")
+    parser.add_argument("-t", "--type", type=str, choices=['standard', 'debug', 'source'],help="Type for iso, include standard debug and source")
+    parser.add_argument("-n", "--name", type=str, help="Product Name for iso")
     parser.add_argument("-v", "--version", type=str, help="Version for iso")
     parser.add_argument("-s", "--release", type=str, help="Release for iso")
     parser.add_argument("-r", "--repos", type=str, help="Repos used for building iso")
-    parser.add_argument("-a", "--arch", type=str, help="Arch for iso")
-    parser.add_argument("-d", "--dbg_flag", help="Enable debug iso", action="store_true")
+    #parser.add_argument("-a", "--arch", type=str, help="Arch for iso")
+    #parser.add_argument("-d", "--dbg_flag", help="Enable debug iso", action="store_true")
     args = parser.parse_args()
 
-    variables = CommonVars(args)
+    # get the working directory of this script
+    work_dir = sys.path[0]
+
+    variables = CommonVars(args,work_dir)
     
     print("-----env init start-----")
     variables.env_init()
@@ -99,11 +103,13 @@ if __name__ == "__main__":
 
     #get_rpm_pub_key(variables.BUILD)
 
-    if variables.DBG_FLAG == 1:
+    if variables.type == "debug":
         print("-----start creating debugiso-----")
         CreateIso().gen_dbg_iso(variables)
         print("-----finish creating debugiso-----")
-    else:
+    elif variables.type == "standard":
         CreateIso().gen_install_iso(variables)
+    elif  variables.type == "source":
+        CreateIso().gen_source_iso(variables)
 
     mk_clean(variables.BUILD)

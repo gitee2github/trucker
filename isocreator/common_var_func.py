@@ -7,35 +7,20 @@ import subprocess
 import configparser
 import shutil
 import glob
+import platform
 
 class CommonVars(object):
-    CONFIG_FILE = NAME = VERSION = RELEASE = REPOS1 = ARCH = ""
+    CONFIG_FILE = NAME = VERSION = RELEASE = REPOS1 = ISOTYPE = ""
     CONFIG = RELEASE_NAME = ISO_NAME = SRC_ISO_NAME = DBG_ISO_NAME = ""
     TYPE, BUILD, SRC_DIR, DBG_DIR = "iso", "/result/tmp/", "/result/tmp/src/", "/result/tmp/dbg/"
     DBG_FLAG = 0
+    ARCH = platform.machine()
     config_dict = {}
 
-    def __init__(self, args):
-        if args.config_file:
-            self.CONFIG_FILE = args.config_file
-        if args.name:
-            self.NAME = args.name
-        if args.version:
-            self.VERSION = args.version
-        if args.release:
-            self.RELEASE = args.release
-        if args.repos:
-            self.REPOS1 = args.repos
-        if args.arch:
-            self.ARCH = args.arch
-        if args.dbg_flag:
-            self.DBG_FLAG = 1
-
-        self.RELEASE_NAME = self.NAME + "-" + self.VERSION + "-" + self.ARCH
-        self.ISO_NAME = self.NAME + "-" + self.VERSION + "-" + self.ARCH + "-dvd.iso"
-        self.SRC_ISO_NAME = self.NAME + "-" + self.VERSION + "-source-dvd.iso"
-        self.DBG_ISO_NAME = self.NAME + "-" + self.VERSION + "-debug-dvd.iso"
-
+    def __init__(self, args, work_dir):
+        # get the standard.conf file
+        self.CONFIG_FILE = work_dir + '/config/' + self.ARCH + '/standard.conf'
+        # get the value in standard.conf
         if self.CONFIG_FILE and os.path.isfile(self.CONFIG_FILE):
             with open(self.CONFIG_FILE) as config_file:
                 for line in config_file:
@@ -49,6 +34,29 @@ class CommonVars(object):
                         self.config_dict[config_key] = config_value
                     else:
                         continue
+        # set the value listed below as default first
+        self.NAME = self.config_dict.get('CONFIG_PRODUCT')
+        self.VERSION = self.config_dict.get('CONFIG_VERSION')
+        self.RELEASE = self.config_dict.get('CONFIG_RELEASE')
+        self.REPOS1 = self.config_dict.get('CONFIG_YUM_REPOS')
+        self.ISOTYPE = "standard"
+        
+        # replace the specific parameters rather than default one
+        if args.name:
+            self.NAME = args.name
+        if args.version:
+            self.VERSION = args.version
+        if args.release:
+            self.RELEASE = args.release
+        if args.repos:
+            self.REPOS1 = args.repos
+        if args.type:
+            self.ISOTYPE = args.type
+
+        self.RELEASE_NAME = self.NAME + "-" + self.VERSION + "-" + self.ARCH
+        self.ISO_NAME = self.NAME + "-" + self.VERSION + "-" + self.ARCH + "-dvd.iso"
+        self.SRC_ISO_NAME = self.NAME + "-" + self.VERSION + "-source-dvd.iso"
+        self.DBG_ISO_NAME = self.NAME + "-" + self.VERSION + "-debug-dvd.iso"
 
     def env_init(self):
         if os.path.isdir(self.BUILD):

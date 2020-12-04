@@ -199,6 +199,29 @@ def get_down_pkg(yum_pkg_avail, rpm_list_uniq, specific_arch):
 
     return not_found_flag
 
+### get rpm packages to be downloaded for standard iso from config/normal.xml
+### and rpmlist.xml
+### TO DO: the path of config file is relative path, maybe replaced by absolute path
+def get_standard_pkglist(rpm_list, common_vars):
+    # get the packages to be downloaded from config/${RACH}/normal.xml
+    normal_rpm_file = ET.parse(common_vars.config_dict.get("CONFIG_PACKAGES_LIST_FILE"))
+    normal_pkg_list = normal_rpm_file.findall("./group/packagelist")
+    with open(rpm_list, "w") as pkgs_list_ori:
+        for normal_pkgs in normal_pkg_list:
+            for normal_pkg in list(normal_pkgs):
+                pkgs_list_ori.write(normal_pkg.text + "\n")
+    # get the common and arch specific packages to be download from rpmlist.xml
+    rpmlist_rpm_file =  ET.parse(common_vars.config_dict.get("CONFIG_RPM_LIST"))
+    rpmlist_pkg_list = rpmlist_rpm_file.findall("./group/packagelist")
+    with open(rpm_list, "a") as pkgs_list_ori:
+        for rpmlist_pkgs in rpmlist_pkg_list:
+            if rpmlist_pkgs.attrib['type'] == common_vars.ARCH:
+                for rpmlist_pkg in list(rpmlist_pkgs):
+                    pkgs_list_ori.write(rpmlist_pkg.text + "\n")
+            elif rpmlist_pkgs.attrib['type'] == 'common':
+                for rpmlist_pkg in list(rpmlist_pkgs):
+                    pkgs_list_ori.write(rpmlist_pkg.text + "\n")
+
 # download packages in xml
 def download_rpms(common_vars):
 
@@ -208,12 +231,16 @@ def download_rpms(common_vars):
     yum_pkg_avail = "yum_pkg_avail.txt"
 
     # get rpm packages from .xml
+    # TO DO: replace the new with get_standard_pkglist
+    get_standard_pkglist(rpm_list, common_vars)
+    '''
     rpm_file = ET.parse(common_vars.config_dict.get("CONFIG_PACKAGES_LIST_FILE"))
     pkg_list = rpm_file.findall("./group/packagelist")
     with open(rpm_list, "w") as pkgs_list_ori:
         for pkgs in pkg_list:
             for pkg in list(pkgs):
                 pkgs_list_ori.write(pkg.text + "\n")
+    '''
 
     # delete repeated packages
     with open(rpm_list_uniq, "w") as pkgs_list_uniq:
