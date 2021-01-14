@@ -18,7 +18,7 @@ Tools for creating iso
 
 1.  将本仓库clone到本地
 2.  调用mkopeneuler.py脚本，需要加上各种参数，具体可以--help查看
-3.  80-openeuler以及config相关配置文件还未修改完成，待开源
+3.  如python3 mkopeneuler.py <font color=#0000FF >_[-h] [-t Type] [-p Product] [-v Version] [-r RELEASE] [-s REPOSITORY]_</font>
 
 #### 参与贡献
 
