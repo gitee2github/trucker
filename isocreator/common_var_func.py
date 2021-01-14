@@ -12,7 +12,7 @@ import platform
 class CommonVars(object):
     CONFIG_FILE = NAME = VERSION = RELEASE = REPOS1 = ISOTYPE = ""
     CONFIG = RELEASE_NAME = ISO_NAME = SRC_ISO_NAME = DBG_ISO_NAME = ""
-    TYPE, BUILD, SRC_DIR, DBG_DIR = "iso", "/result/tmp/", "/result/tmp/src/", "/result/tmp/dbg/"
+    BUILD, SRC_DIR, DBG_DIR = "/result/tmp/", "/result/tmp/src/", "/result/tmp/dbg/"
     DBG_FLAG = 0
     ARCH = platform.machine()
     config_dict = {}

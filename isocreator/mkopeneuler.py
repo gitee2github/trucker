@@ -27,8 +27,12 @@ def mk_clean(tmp_build_dir):
         os.rename("/etc/repos.old", "/etc/yum.repos.d")
 
 def create_install_img(common_vars):
-    repos = " " + common_vars.REPOS1
-    repos_s = repos.replace(" ", " -s ")
+    #repos = " " + common_vars.REPOS1
+    #repos_s = repos.replace(" ", " -s ")
+    repos_s = ""
+    repos = re.split(r' +', common_vars.REPOS1)
+    for repo in repos:
+        repos_s = repos_s + " -s " + repo
     cmd = "lorax " + "--isfinal " +  "-p " + common_vars.NAME + " -v " + common_vars.VERSION + " -r " + common_vars.RELEASE \
             + " --sharedir " + "80-openeuler " + "--rootfs-size " + "3 " + "--buildarch " + common_vars.ARCH + \
             repos_s +  " --nomacboot " + "--noupgrade " + common_vars.BUILD + "/iso"
@@ -38,6 +42,7 @@ def create_install_img(common_vars):
     return res
 
 def create_repos(common_vars):
+    repo_dir = "/etc/yum.repos.d/"
     # if /etc/repos.old is already exist, back up to a new dir depends on time
     if os.path.isdir("/etc/repos.old"):
         TIMEFORMAT = '%Y-%m-%d-%H:%M:%S'
@@ -47,11 +52,19 @@ def create_repos(common_vars):
 
     os.rename("/etc/yum.repos.d", "/etc/repos.old")
     os.mkdir("/etc/yum.repos.d/")
-    repos = re.split(r'[\s]', common_vars.REPOS1)
+    repos = re.split(r' +', common_vars.REPOS1)
     for repo in repos:
         res = subprocess.call(["yum-config-manager", "--add-repo", repo])
         if res != 0:
             raise RuntimeError("create repo failed!",res)
+
+    # add gpgcheck=0 to .repo files
+    repo_files = os.listdir(repo_dir)
+    for repo_file in repo_files:
+        if not os.path.isdir(repo_file):
+            with open(repo_dir + repo_file, "a") as repo:
+                repo.write("gpgcheck=0\n")
+
     subprocess.call("yum clean all",shell = True)
 
 if __name__ == "__main__":
@@ -61,8 +74,8 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--type", type=str, choices=['standard', 'debug', 'source'],help="Type for iso, include standard debug and source")
     parser.add_argument("-n", "--name", type=str, help="Product Name for iso")
     parser.add_argument("-v", "--version", type=str, help="Version for iso")
-    parser.add_argument("-s", "--release", type=str, help="Release for iso")
-    parser.add_argument("-r", "--repos", type=str, help="Repos used for building iso")
+    parser.add_argument("-r", "--release", type=str, help="Release for iso")
+    parser.add_argument("-s", "--repos", type=str, help="Repos used for building iso")
     #parser.add_argument("-a", "--arch", type=str, help="Arch for iso")
     #parser.add_argument("-d", "--dbg_flag", help="Enable debug iso", action="store_true")
     args = parser.parse_args()
@@ -103,13 +116,17 @@ if __name__ == "__main__":
 
     #get_rpm_pub_key(variables.BUILD)
 
-    if variables.type == "debug":
+    if variables.ISOTYPE == "debug":
         print("-----start creating debugiso-----")
         CreateIso().gen_dbg_iso(variables)
         print("-----finish creating debugiso-----")
-    elif variables.type == "standard":
+    elif variables.ISOTYPE == "standard":
+        print("-----start creating standardiso-----")
         CreateIso().gen_install_iso(variables)
-    elif  variables.type == "source":
+        print("-----finish creating sourceiso-----")
+    elif  variables.ISOTYPE == "source":
+        print("-----start creating sourceiso-----")
         CreateIso().gen_source_iso(variables)
+        print("-----finish creating sourceiso-----")
 
     mk_clean(variables.BUILD)

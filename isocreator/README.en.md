@@ -16,7 +16,7 @@ This tool is a noarch tool.
 
 1.  clone this repository
 2.  python3 mkopeneuler.py -options, get details by --help
-3.  configs of 80-openeuler and so on are under modifing, to be open source
+    Such as python3 mkopeneuler.py <font color=#0000FF >_[-h] [-t Type] [-p Product] [-v Version] [-r RELEASE] [-s REPOSITORY]_</font>
 
 #### Contribution
 

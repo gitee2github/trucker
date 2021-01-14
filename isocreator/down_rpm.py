@@ -333,8 +333,11 @@ def download_rpms(common_vars):
                             " " + conflict_pkgs_to_down
         subprocess.run(cmd, shell = True)
 
-    if common_vars.DBG_FLAG:
+    if common_vars.ISOTYPE == "debug":
         down_dbg_rpm(common_vars, yum_pkg_avail)
+    elif common_vars.ISOTYPE == "source":
+        down_src_rpm(common_vars)
+        
 
     # create local repo
     repo_dir = os.path.join(common_vars.BUILD, "iso/repodata/")
