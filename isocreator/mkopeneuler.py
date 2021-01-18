@@ -27,8 +27,6 @@ def mk_clean(tmp_build_dir):
         os.rename("/etc/repos.old", "/etc/yum.repos.d")
 
 def create_install_img(common_vars):
-    #repos = " " + common_vars.REPOS1
-    #repos_s = repos.replace(" ", " -s ")
     repos_s = ""
     repos = re.split(r' +', common_vars.REPOS1)
     for repo in repos:
@@ -70,14 +68,12 @@ def create_repos(common_vars):
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    #parser.add_argument("-f", "--config_file", type=str, help="Config file")
-    parser.add_argument("-t", "--type", type=str, choices=['standard', 'debug', 'source'],help="Type for iso, include standard debug and source")
+    parser.add_argument("-t", "--type", type=str, choices=['standard', 'debug', 'source'],
+                        help="Type for iso, include standard debug and source")
     parser.add_argument("-n", "--name", type=str, help="Product Name for iso")
     parser.add_argument("-v", "--version", type=str, help="Version for iso")
     parser.add_argument("-r", "--release", type=str, help="Release for iso")
     parser.add_argument("-s", "--repos", type=str, help="Repos used for building iso")
-    #parser.add_argument("-a", "--arch", type=str, help="Arch for iso")
-    #parser.add_argument("-d", "--dbg_flag", help="Enable debug iso", action="store_true")
     args = parser.parse_args()
 
     # get the working directory of this script
@@ -113,8 +109,6 @@ if __name__ == "__main__":
         raise RuntimeError(err, create_img_res)
 
     variables.cfg_init()
-
-    #get_rpm_pub_key(variables.BUILD)
 
     if variables.ISOTYPE == "debug":
         print("-----start creating debugiso-----")
