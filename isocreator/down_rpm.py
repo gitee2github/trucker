@@ -13,8 +13,6 @@ from common_var_func import CommonFunc as CF
 def find_pkg(list_file, pkg_name):
     with open(list_file, "r") as fr:
         for line in fr:
-            # the line starts with pkg
-            #line = line.strip('\n')
             if line.startswith(pkg_name):
                 return True
     return False
@@ -199,9 +197,9 @@ def get_down_pkg(yum_pkg_avail, rpm_list_uniq, specific_arch):
 
     return not_found_flag
 
-### get rpm packages to be downloaded for standard iso from config/normal.xml
-### and rpmlist.xml
-### TO DO: the path of config file is relative path, maybe replaced by absolute path
+# get rpm packages to be downloaded for standard iso from config/normal.xml
+# and rpmlist.xml
+# TO DO: the path of config file is relative path, maybe replaced by absolute path
 def get_standard_pkglist(rpm_list, common_vars):
     # get the packages to be downloaded from config/${RACH}/normal.xml
     normal_rpm_file = ET.parse(common_vars.config_dict.get("CONFIG_PACKAGES_LIST_FILE"))
@@ -233,14 +231,6 @@ def download_rpms(common_vars):
     # get rpm packages from .xml
     # TO DO: replace the new with get_standard_pkglist
     get_standard_pkglist(rpm_list, common_vars)
-    '''
-    rpm_file = ET.parse(common_vars.config_dict.get("CONFIG_PACKAGES_LIST_FILE"))
-    pkg_list = rpm_file.findall("./group/packagelist")
-    with open(rpm_list, "w") as pkgs_list_ori:
-        for pkgs in pkg_list:
-            for pkg in list(pkgs):
-                pkgs_list_ori.write(pkg.text + "\n")
-    '''
 
     # delete repeated packages
     with open(rpm_list_uniq, "w") as pkgs_list_uniq:
