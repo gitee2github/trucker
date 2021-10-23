@@ -1,7 +1,7 @@
 # trucker
 
 #### Description
-Tools for create iso livecd and cloud image
+Tools for creating .iso livecd and cloud images
 
 #### Software Architecture
 Software architecture description
