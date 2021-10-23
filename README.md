@@ -1,7 +1,7 @@
 # trucker
 
 #### 介绍
-Tools for create iso livecd and cloud image
+用于创建 iso livecd 和云镜像的工具
 
 #### 软件架构
 软件架构说明
